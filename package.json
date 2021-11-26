@@ -1,0 +1,30 @@
+{
+  "name": "check_google_credentials",
+  "version": "1.0.3",
+  "description": "Verify if the google credentials are correctly defined on your env and return the values of them",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": "none",
+  "author": "https://www.ravn.co/",
+  "license": "MIT",
+  "scripts": {
+    "build":"tsc",
+    "format:write": "yarn format --list-different --write",
+    "typescript": "tsc --noEmit",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "format": "prettier .",
+    "format:check": "yarn format --check",
+    "validate": "npm-run-all typescript lint format:check",
+    "prepublishOnly": "yarn build"
+  },
+  "devDependencies": {
+    "@ravn-dev/eslint-config-ravn": "^4.0.1",
+    "@ravn-dev/prettier-config": "^1.0.0",
+    "eslint": "^8.3.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.2",
+    "prettier": "^2.5.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  }
+}
