@@ -1,7 +1,9 @@
 import { GOOGLE_CREDENTIALS } from "./types"
 import stackdriver from "pino-stackdriver"
 
-function validateCredentials(google_credentials_env: string) {
+export function validateCredentials(
+  google_credentials_env: string = "GOOGLE_APPLICATION_CREDENTIALS",
+) {
   const env = process.env[google_credentials_env]
 
   if (!env) {
