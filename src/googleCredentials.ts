@@ -30,34 +30,53 @@ function validateCredentials(google_credentials_env: string) {
 
 export function NestJsLogger(
   google_credentials_env: string = "GOOGLE_APPLICATION_CREDENTIALS",
-) {
+): {
+  pinoHttp:
+    | [{ level: string }, NodeJS.WritableStream]
+    | [
+        {
+          transport: {
+            target: string
+            options: {
+              colorize: boolean
+              translateTime: boolean
+              levelFirst: boolean
+            }
+          }
+        },
+      ]
+} {
   let pinoHttp
   if (process.env.NODE_ENV === "production") {
     const credentials = validateCredentials(google_credentials_env)
 
-    pinoHttp = [
-      { level: "info" },
-      stackdriver.createWriteStream({
-        projectId: credentials.project_id,
-        credentials: {
-          client_email: credentials.client_email,
-          private_key: credentials.private_key,
-        },
-      }),
-    ]
+    pinoHttp = {
+      pinoHttp: [
+        { level: "info" },
+        stackdriver.createWriteStream({
+          projectId: credentials.project_id,
+          credentials: {
+            client_email: credentials.client_email,
+            private_key: credentials.private_key,
+          },
+        }),
+      ],
+    }
   } else {
-    pinoHttp = [
-      {
-        transport: {
-          target: "pino-pretty",
-          options: {
-            colorize: true,
-            translateTime: true,
-            levelFirst: true,
+    pinoHttp = {
+      pinoHttp: [
+        {
+          transport: {
+            target: "pino-pretty",
+            options: {
+              colorize: true,
+              translateTime: true,
+              levelFirst: true,
+            },
           },
         },
-      },
-    ]
+      ],
+    }
   }
 
   return pinoHttp
@@ -65,7 +84,28 @@ export function NestJsLogger(
 
 export function ExpressLogger(
   google_credentials_env: string = "GOOGLE_APPLICATION_CREDENTIALS",
-) {
+):
+  | {
+      options: {
+        level: string
+        transport?: undefined
+      }
+      stream: NodeJS.WritableStream
+    }
+  | {
+      options: {
+        level: string
+        transport: {
+          target: string
+          options: {
+            colorize: boolean
+            translateTime: boolean
+            levelFirst: boolean
+          }
+        }
+      }
+      stream: null
+    } {
   if (process.env.NODE_ENV === "production") {
     const credentials = validateCredentials(google_credentials_env)
 
