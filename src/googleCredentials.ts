@@ -1,5 +1,6 @@
 import { GOOGLE_CREDENTIALS } from "./types"
 import stackdriver from "pino-stackdriver"
+import pino from "pino"
 
 export function validateCredentials(
   google_credentials_env: string = "GOOGLE_APPLICATION_CREDENTIALS",
@@ -90,37 +91,16 @@ export function NestJsLogger(
 export function ExpressLogger(
   google_credentials_env: string = "GOOGLE_APPLICATION_CREDENTIALS",
   logger_name: string = "LOGGER_NAME",
-):
-  | {
-      options: {
-        level: string
-        transport?: undefined
-      }
-      stream: NodeJS.WritableStream
-    }
-  | {
-      options: {
-        level: string
-        transport: {
-          target: string
-          options: {
-            colorize: boolean
-            translateTime: boolean
-            levelFirst: boolean
-          }
-        }
-      }
-      stream: null
-    } {
+): pino.Logger {
   if (process.env.NODE_ENV === "production") {
     const credentials = validateCredentials(google_credentials_env)
     const logName = process.env[logger_name]
 
-    return {
-      options: {
+    return pino(
+      {
         level: "info",
       },
-      stream: stackdriver.createWriteStream({
+      stackdriver.createWriteStream({
         projectId: credentials.project_id,
         credentials: {
           client_email: credentials.client_email,
@@ -128,21 +108,18 @@ export function ExpressLogger(
         },
         logName,
       }),
-    }
+    )
   } else {
-    return {
-      options: {
-        level: "debug",
-        transport: {
-          target: "pino-pretty",
-          options: {
-            colorize: true,
-            translateTime: true,
-            levelFirst: true,
-          },
+    return pino({
+      level: "debug",
+      transport: {
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+          translateTime: true,
+          levelFirst: true,
         },
       },
-      stream: null,
-    }
+    })
   }
 }
