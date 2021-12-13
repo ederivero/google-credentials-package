@@ -32,6 +32,7 @@ export function validateCredentials(
 
 export function NestJsLogger(
   google_credentials_env: string = "GOOGLE_APPLICATION_CREDENTIALS",
+  logger_name: string = "LOGGER_NAME",
 ): {
   pinoHttp:
     | [{ level: string }, NodeJS.WritableStream]
@@ -51,6 +52,7 @@ export function NestJsLogger(
   let pinoHttp
   if (process.env.NODE_ENV === "production") {
     const credentials = validateCredentials(google_credentials_env)
+    const logName = process.env[logger_name]
 
     pinoHttp = {
       pinoHttp: [
@@ -61,6 +63,7 @@ export function NestJsLogger(
             client_email: credentials.client_email,
             private_key: credentials.private_key,
           },
+          logName,
         }),
       ],
     }
@@ -86,6 +89,7 @@ export function NestJsLogger(
 
 export function ExpressLogger(
   google_credentials_env: string = "GOOGLE_APPLICATION_CREDENTIALS",
+  logger_name: string = "LOGGER_NAME",
 ):
   | {
       options: {
@@ -110,6 +114,7 @@ export function ExpressLogger(
     } {
   if (process.env.NODE_ENV === "production") {
     const credentials = validateCredentials(google_credentials_env)
+    const logName = process.env[logger_name]
 
     return {
       options: {
@@ -121,7 +126,7 @@ export function ExpressLogger(
           client_email: credentials.client_email,
           private_key: credentials.private_key,
         },
-        logName: "heimdall-webhook-proxies",
+        logName,
       }),
     }
   } else {
