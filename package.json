@@ -1,6 +1,6 @@
 {
   "name": "parse-google-env-credentials",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Verify if the google credentials are correctly defined on your env and return the values of them to use in ExpressJs or NestJS",
   "main": "lib/index.js",
   "keywords": [

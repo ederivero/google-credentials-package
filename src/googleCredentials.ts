@@ -57,7 +57,12 @@ export function NestJsLogger(
 
     pinoHttp = {
       pinoHttp: [
-        { level: "info" },
+        {
+          level: "info",
+          customSuccessMessage: (res: {
+            req: { method: string; url: string }
+          }) => `request completed to ${res.req.method}: ${res.req.url}`,
+        },
         stackdriver.createWriteStream({
           projectId: credentials.project_id,
           credentials: {
@@ -72,6 +77,7 @@ export function NestJsLogger(
     pinoHttp = {
       pinoHttp: [
         {
+          autoLogging: false,
           transport: {
             target: "pino-pretty",
             options: {
